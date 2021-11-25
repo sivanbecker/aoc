@@ -1,2 +1,0 @@
-AdvantOfCode - all years
-
