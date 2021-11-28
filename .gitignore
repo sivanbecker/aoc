@@ -1,2 +1,12 @@
 
 .vscode/settings.json
+
+.python-version
+
+*.pyc
+
+
+aoc2020/day8/__pycache__/
+
+
+aoc2020/__pycache__/
