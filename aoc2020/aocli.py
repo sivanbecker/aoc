@@ -1,3 +1,4 @@
+#!./venv python
 import os
 import subprocess
 from pprint import pprint
@@ -32,11 +33,13 @@ def info():
 @click.option("--day", "--day-number", "day", help="number of the day to solve")
 @click.option("--part", "part", help="part1 or part2", default=1)
 @click.option("--year", "year", help="advent of code specific year", default=2020)
-def solve(day, part, year):
-
-    solver = Solver(day, year=year)
-
-    print(solver.run.part1()) if part == 1 else print(solver.run.part2())
+@click.option("--test/--no-test", help="solve testcase", default=False)
+def solve(day, part, year, test):
+    comment = "Solving TEATCASE Problem" if test else "Solving REAL Problem"
+    fgcolor = "yellow" if test else "green"
+    solver = Solver(day, year=year, test=test)
+    click.secho(comment, fg=fgcolor)
+    click.secho(solver.run.part1(), fg=fgcolor) if part == 1 else click.secho(solver.run.part2(), fg=fgcolor)
 
 
 @cli.command()

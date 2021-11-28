@@ -3,8 +3,13 @@ import importlib
 import click
 import subprocess
 
-class BaseSolver:
+INPUT_FILES = {
+    "testcase": {"part1": "input1_testcase.txt", "part2": "input2_testcase.txt"},
+    "real": {"part1": "input1.txt", "part2": "input2.txt"},
+}
 
+
+class BaseSolver:
     def __init__(self):
         pass
         # if os.path.isfile(input_file):
@@ -21,7 +26,7 @@ class BaseSolver:
         self.input = "input1.txt"
         if not os.path.isfile("input1.txt"):
             raise IOError(f"Input file {self.input} does not exist")
-            
+
         print("PART1 Not Implemented")
 
     def part2(self, *args, **kw):
@@ -32,22 +37,23 @@ class BaseSolver:
 
 
 class Solver(BaseSolver):
-    def __init__(self, day_number, year=None):
+    def __init__(self, day_number, year=None, test=False):
         assert year, f"Please insert the year !!"
         self.year = year
         self.aoc_module = f"aoc{year}"
         self.basepath = f"{os.path.abspath('.')}/aoc{year}"
         self.day = day_number
         self.solver_module = None
+        self.test = test
         super().__init__()
 
     def _day_importer(self, part):
         """ day is an integer, part can be 1 or 2"""
-        assert isinstance(int(self.day), int), f"Day must be an integer. but i got >> {self.day} <<"
+        assert isinstance(
+            int(self.day), int
+        ), f"Day must be an integer. but i got >> {self.day} <<"
         try:
-            return importlib.import_module(
-                f"{self.aoc_module}.day{self.day}.solution", package="aoc"
-            )
+            return importlib.import_module(f"day{self.day}.solution")
 
         except ModuleNotFoundError as exc:
             if "No module named" in exc.__str__():
@@ -61,7 +67,14 @@ class Solver(BaseSolver):
         click.secho(f"\nRunning Day {self.day} tests\n", fg="yellow")
         os.environ["DAY"] = self.day
         os.environ["YEAR"] = str(self.year)
-        pytest_args = ["pytest", f"{self.basepath}/tests/tests.py" ,"-s", "-vvv", "-k", f"example{part}"]
+        pytest_args = [
+            "pytest",
+            f"{self.basepath}/tests/tests.py",
+            "-s",
+            "-vvv",
+            "-k",
+            f"example{part}",
+        ]
         print(f"About to run pytest cmd: {' '.join(pytest_args)}")
         subprocess.run(pytest_args)
 
@@ -80,11 +93,13 @@ class Solver(BaseSolver):
 
     def part1(self, inp="input1.txt"):
         """ inp = input to solve"""
+        inp = INPUT_FILES['testcase']['part1'] if self.test else INPUT_FILES['real']['part1']
         self.solver_module = self._day_importer("1")
         return self.solver_module.DailyClass(self._input_iter(inp=inp)).solve_part1()
 
     def part2(self, inp="input2.txt"):
         """ inp = input to solve"""
+        inp = INPUT_FILES['testcase']['part2'] if self.test else INPUT_FILES['real']['part2']
         self.solver_module = self._day_importer("2")
         return self.solver_module.DailyClass(self._input_iter(inp=inp)).solve_part2()
 
