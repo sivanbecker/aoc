@@ -1,11 +1,12 @@
 #!./venv python
 import os
-import subprocess
+
 from pprint import pprint
 
 import click
 
 from base_resolver import Solver
+from initializer import Initializer
 
 INFO_FILE = "info.txt"
 
@@ -39,7 +40,9 @@ def solve(day, part, year, test):
     fgcolor = "yellow" if test else "green"
     solver = Solver(day, year=year, test=test)
     click.secho(comment, fg=fgcolor)
-    click.secho(solver.run.part1(), fg=fgcolor) if part == 1 else click.secho(solver.run.part2(), fg=fgcolor)
+    click.secho(solver.run.part1(), fg=fgcolor) if part == 1 else click.secho(
+        solver.run.part2(), fg=fgcolor
+    )
 
 
 @cli.command()
@@ -47,7 +50,7 @@ def solve(day, part, year, test):
 @click.option("--part", "part", help="part1 or part2", default=1)
 @click.option("--year", "year", help="advent of code specific year", default=2020)
 def test(day, part, year):
-    
+
     solver = Solver(day, year=year)
     solver.test(day, part)
 
@@ -55,18 +58,9 @@ def test(day, part, year):
 @cli.command()
 @click.option("--day", "--day-number", "day", help="number of the day to init")
 def init(day):
-    files2create = [
-        "input1.txt",
-        "input2.txt",
-        "dummy_input1.txt",
-        "dummy_input2.txt",
-        "dummy_solution1.txt",
-        "dummy_solution2.txt",
-    ]
-    subprocess.run(["mkdir", f"day{day}"])
-    subprocess.run(["cp", "solution.template", f"day{day}/solution.py"])
-    for _file in files2create:
-        subprocess.run(["touch", f"day{day}/{_file}"])
+    init_obj = Initializer(day)
+    init_obj.all()
+    
 
 
 if __name__ == "__main__":
