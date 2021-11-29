@@ -2,20 +2,14 @@ import os
 import importlib
 import click
 import subprocess
+from initializer import INPUT_FILES, OUTPUT_FILES
 
-INPUT_FILES = {
-    "testcase": {"part1": "input1_testcase.txt", "part2": "input2_testcase.txt"},
-    "real": {"part1": "input1.txt", "part2": "input2.txt"},
-}
 
 
 class BaseSolver:
     def __init__(self):
-        pass
-        # if os.path.isfile(input_file):
-        #     self.input = input_file
-        # else:
-        #     raise IOError(f"Input file {input_file} does not exist")
+        self.input = None
+        self.output = None
 
     def _input_iter(self):
         with open(self.input, "r") as fh:
@@ -63,20 +57,6 @@ class Solver(BaseSolver):
                 )
                 raise click.Abort
 
-    def test(self, day, part):
-        click.secho(f"\nRunning Day {self.day} tests\n", fg="yellow")
-        os.environ["DAY"] = self.day
-        os.environ["YEAR"] = str(self.year)
-        pytest_args = [
-            "pytest",
-            f"{self.basepath}/tests/tests.py",
-            "-s",
-            "-vvv",
-            "-k",
-            f"example{part}",
-        ]
-        print(f"About to run pytest cmd: {' '.join(pytest_args)}")
-        subprocess.run(pytest_args)
 
     @property
     def run(self):
@@ -87,28 +67,37 @@ class Solver(BaseSolver):
         assert os.path.isfile(
             daily_input_file
         ), f"Failed finding file {daily_input_file}"
+        assert os.stat(daily_input_file).st_size > 0, f"Input file is empty. {daily_input_file}"
         with open(daily_input_file, "r") as fh:
             for line in fh:
                 yield line.strip()
 
-    def part1(self, inp="input1.txt"):
+    def get_output_file(self, part) -> str:
+        self.output = f"{self.basepath}/day{self.day}/{OUTPUT_FILES['testcase'][part] if self.test else OUTPUT_FILES['real'][part]}"
+
+    def part1(self, inp=""):
         """ inp = input to solve"""
         inp = INPUT_FILES['testcase']['part1'] if self.test else INPUT_FILES['real']['part1']
+        self.get_output_file(part='part1')
         self.solver_module = self._day_importer("1")
-        return self.solver_module.DailyClass(self._input_iter(inp=inp)).solve_part1()
+        my_solution = self.solver_module.DailyClass(self._input_iter(inp=inp)).solve_part1()
+        
+        if self.test:
+            with open(self.output, 'r') as fh: 
+                testcase_solution = fh.readline().strip()
+            return f"My solution {'WORKED :)' if my_solution == testcase_solution else 'FAILED :('} on testcase ({my_solution} Vs. {testcase_solution} )"
+        return my_solution
 
-    def part2(self, inp="input2.txt"):
+    def part2(self, inp=""):
         """ inp = input to solve"""
         inp = INPUT_FILES['testcase']['part2'] if self.test else INPUT_FILES['real']['part2']
+        self.get_output_file(part='part2')
         self.solver_module = self._day_importer("2")
-        return self.solver_module.DailyClass(self._input_iter(inp=inp)).solve_part2()
+        my_solution = self.solver_module.DailyClass(self._input_iter(inp=inp)).solve_part2()
+        if self.test:
+            with open(self.output, 'r') as fh: 
+                testcase_solution = fh.readline().strip()
+            return f"My solution {'WORKED :)' if my_solution == testcase_solution else 'FAILED :('} on testcase ({my_solution} Vs. {testcase_solution} )" 
+        return my_solution
 
-    def run_test1(self, inp="dummy_input1.txt"):
-        """ inp = input to solve"""
-        self.solver_module = self._day_importer("")
-        return self.solver_module.DailyClass(self._input_iter(inp=inp)).solve_part1()
-
-    def run_test2(self, inp="dummy_input2.txt"):
-        """ inp = input to solve"""
-        self.solver_module = self._day_importer("")
-        return self.solver_module.DailyClass(self._input_iter(inp=inp)).solve_part2()
+    
