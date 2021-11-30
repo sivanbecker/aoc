@@ -4,5 +4,7 @@
 .python-version
 
 */__pycache__/*
-aoc2020/__pycache__/
-aoc2021/__pycache__/
+aoc*/__pycache__/
+
+aoc2020/*/__pycache__/
+
