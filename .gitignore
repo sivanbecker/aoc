@@ -3,10 +3,8 @@
 
 .python-version
 
-*.pyc
+*/__pycache__/*
+aoc*/__pycache__/
 
+aoc2020/*/__pycache__/
 
-aoc2020/day8/__pycache__/
-
-
-aoc2020/__pycache__/
