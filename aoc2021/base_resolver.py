@@ -85,7 +85,7 @@ class Solver(BaseSolver):
         if self.test:
             with open(self.output, 'r') as fh: 
                 testcase_solution = fh.readline().strip()
-            return f"My solution {'WORKED :)' if my_solution == testcase_solution else 'FAILED :('} on testcase ({my_solution} Vs. {testcase_solution} )"
+            return f"My solution {'WORKED :)' if self.compare_mine_to_test_solution(my_solution, testcase_solution) else 'FAILED :('} on testcase ({my_solution} Vs. {testcase_solution} )"
         return my_solution
 
     def part2(self, inp=""):
@@ -97,7 +97,12 @@ class Solver(BaseSolver):
         if self.test:
             with open(self.output, 'r') as fh: 
                 testcase_solution = fh.readline().strip()
-            return f"My solution {'WORKED :)' if my_solution == testcase_solution else 'FAILED :('} on testcase ({my_solution} Vs. {testcase_solution} )" 
+            return f"My solution {'WORKED :)' if self.compare_mine_to_test_solution(my_solution, testcase_solution) else 'FAILED :('} on testcase ({my_solution} Vs. {testcase_solution} )" 
         return my_solution
 
-    
+    def compare_mine_to_test_solution(self, mine, test_solution):
+        if mine == test_solution:
+            return True
+        if str(mine) == str(test_solution):
+            return True
+        return False
