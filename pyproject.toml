@@ -8,6 +8,7 @@ authors = ["Sivan Becker <sbecker@infinidat.com>"]
 python = ">=3.9,<3.11"
 click = "^8.0.3"
 numpy = "^1.21.4"
+asyncio = "^3.4.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
