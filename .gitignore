@@ -9,3 +9,5 @@ aoc*/__pycache__/
 aoc2020/*/__pycache__/
 aoc2021/*/__pycache__/
 
+
+.vscode/
