@@ -56,22 +56,21 @@ class DailyClass:
             self.find_flashing()
 
     def incr(self):
-        # print("INCREMENT ALL By 1")
         self.octopuses += 1
 
     def step(self):
-        # print(">>> START STEP")
         self.step_flashing = {}
         self.incr()
         self.find_flashing()
-        # print(">>> END STEP")
         
     def run(self, count:int=None):
-        
-        while count:
+        steps_ran = 0
+        while steps_ran < count:
+            steps_ran += 1
             self.step()
-            count -= 1
-            # print(self.octopuses)
+            # print(f"After step {steps_ran}")
+            if (self.octopuses == 0).all():
+                return steps_ran
 
     def solve_part1(self):
         self.digest_input()
@@ -80,4 +79,4 @@ class DailyClass:
 
     def solve_part2(self):
         self.digest_input()
-        return "Not Impl"
+        return self.run(count=2000)
