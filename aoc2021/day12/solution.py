@@ -74,11 +74,31 @@ class DailyClass:
             
             self.find_all_paths2(origin=e[1], visited=visited)
         
-    def find_all_paths3(self, origin='start', visited=None):
-        if origin in self.lowernodes and visited and origin in visited:
-            # print(f"already been to {origin}")
-            return
-        visited = visited + origin if visited else origin
+    def find_all_paths3(self, origin='start', visited=None, small_twice=False):
+        '''
+        re | small_twice
+        1    False
+        2    False
+        1    True
+        2    True
+        '''
+        if origin in ('start', 'end') and visited and origin in visited:
+                return
+        if origin in self.lowernodes and visited and re.findall(origin, visited):
+            if len(re.findall(origin, visited))==1 and not small_twice:
+                small_twice = True
+                visited = visited + origin if visited else origin
+            elif len(re.findall(origin, visited))>1 and not small_twice:
+                raise ValueError("small twice but not recognized :(")
+            elif len(re.findall(origin, visited))>1 and small_twice:
+                # print(f"already been to {origin} more then once {visited} - not adding")
+                return
+            elif len(re.findall(origin, visited)) == 1 and small_twice:
+                # print(f"already been to {origin} more then once {visited} - not adding")
+                return
+        else: # not a lowercase
+            
+            visited = visited + origin if visited else origin
         for e in self.g.edges(origin):
             # print(f"need to go from {origin} to {e[1]}")
             if origin == 'end':
@@ -86,7 +106,7 @@ class DailyClass:
                 self.ended += 1
                 return
             
-            self.find_all_paths2(origin=e[1], visited=visited)
+            self.find_all_paths3(origin=e[1], visited=visited, small_twice=small_twice)
 
     def solve_part1(self):
         self.digest_input()
@@ -95,4 +115,5 @@ class DailyClass:
 
     def solve_part2(self):
         self.digest_input()
-        return "Not Impl"
+        self.find_all_paths3()
+        return self.ended
