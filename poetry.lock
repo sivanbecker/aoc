@@ -71,6 +71,21 @@ optional = false
 python-versions = ">=3.5"
 
 [[package]]
+name = "networkx"
+version = "2.6.3"
+description = "Python package for creating and manipulating graphs and networks"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.extras]
+default = ["numpy (>=1.19)", "scipy (>=1.5,!=1.6.1)", "matplotlib (>=3.3)", "pandas (>=1.1)"]
+developer = ["black (==21.5b1)", "pre-commit (>=2.12)"]
+doc = ["sphinx (>=4.0,<5.0)", "pydata-sphinx-theme (>=0.6,<1.0)", "sphinx-gallery (>=0.9,<1.0)", "numpydoc (>=1.1)", "pillow (>=8.2)", "nb2plots (>=0.6)", "texext (>=0.6.6)"]
+extra = ["lxml (>=4.5)", "pygraphviz (>=1.7)", "pydot (>=1.4.1)"]
+test = ["pytest (>=6.2)", "pytest-cov (>=2.12)", "codecov (>=2.1)"]
+
+[[package]]
 name = "numpy"
 version = "1.21.4"
 description = "NumPy is the fundamental package for array computing with Python."
@@ -208,7 +223,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9,<3.11"
-content-hash = "ae4075daf97507b1cdb61d4750ff0b007faf771e77d4234c46e67c14713ec349"
+content-hash = "19afa71da666fe18837a5f1e6b91080b01d46a30605c2d702e34a6878c09de06"
 
 [metadata.files]
 asyncio = [
@@ -240,6 +255,10 @@ jedi = [
 more-itertools = [
     {file = "more-itertools-8.12.0.tar.gz", hash = "sha256:7dc6ad46f05f545f900dd59e8dfb4e84a4827b97b3cfecb175ea0c7d247f6064"},
     {file = "more_itertools-8.12.0-py3-none-any.whl", hash = "sha256:43e6dd9942dffd72661a2c4ef383ad7da1e6a3e968a927ad7a6083ab410a688b"},
+]
+networkx = [
+    {file = "networkx-2.6.3-py3-none-any.whl", hash = "sha256:80b6b89c77d1dfb64a4c7854981b60aeea6360ac02c6d4e4913319e0a313abef"},
+    {file = "networkx-2.6.3.tar.gz", hash = "sha256:c0946ed31d71f1b732b5aaa6da5a0388a345019af232ce2f49c766e2d6795c51"},
 ]
 numpy = [
     {file = "numpy-1.21.4-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:8890b3360f345e8360133bc078d2dacc2843b6ee6059b568781b15b97acbe39f"},
