@@ -1,6 +1,63 @@
 from typing import Tuple
 
 
+class Operator:
+
+    
+
+    
+    def __init__(self, typeid, pktnum=None, bitlen=None):
+        
+        self.OP = {
+            0: sum,
+            1: '_product',
+            2: min,
+            3: max,
+            5: '_greater_than',
+            6: '_less_than',
+            7: '_equal_to' 
+        }
+        
+        self._op = self.OP[typeid]
+        self._typeid = typeid
+        assert bitlen or pktnum, f"Please provide pktnum or bitlen when creating new Operator Object"
+        self.pktnum = pktnum # sub pkts amount (if applicable)
+        self.bitlen = bitlen # sub pkts bit len (if applicable)
+        self.sub_vals = []
+        print(f"Initiated {self}")
+
+    def __repr__(self):
+        return f'<Operator {self._op} (PKTNUM:{self.pktnum}; BITLEN:{self.bitlen})>'
+
+    def collect_sub_vals(self, val):
+        print(f"{self} adding literal value {val}")
+        self.sub_vals.append(val)
+    
+    def _product(self):
+        from functools import reduce
+        return reduce(lambda a,b: a*b ,self.sub_vals, 1)
+
+    def _less_than(self):
+        return 1 if self.sub_vals[0] < self.sub_vals[1] else 0
+
+    def _greater_than(self):
+        return 1 if self._less_than() == 0 else 0    
+
+    def _equal_to(self):
+        return 1 if self.sub_vals[0] == self.sub_vals[1] else 0
+
+    def execute(self):
+        if self._op in ('_product', '_greater_than', '_less_than', '_equal_to'):
+            return self.__getattribute__(self._op)()
+            # return self._product(vals=self.sub_vals)
+        return self._op(self.sub_vals)
+        # if self._op == 'sum':
+        #     return sum(self.sub_vals)
+        # if self._op == 'product':
+            
+            
+        # if self._op == 'min':
+        #     return min(self.sub_vals)
 class DailyClass:
 
     HEX2BIN = { 
@@ -21,6 +78,7 @@ class DailyClass:
         "E":"1110",
         "F":"1111",
     }
+    
 
     def __init__(self, fh_iter):
         self._fh_iter = fh_iter
@@ -40,6 +98,10 @@ class DailyClass:
             return True
         else:
             print("** Operator **\n")
+
+
+    def optype(self, typeid):
+        ''' for different operator types '''
 
     def digest_input(self):
         self.hpacket = next(self._fh_iter)
@@ -94,25 +156,31 @@ class DailyClass:
             return None, self.get_bits_segment_and_convert(itr, count=11)
 
     def read_packet(self, itr):
+
         self.veradd(self.get_bits_segment_and_convert(itr=itr, count=3))
-        if self.literal_type(self.get_bits_segment_and_convert(itr=itr, count=3)):
-            self.get_literal_value(itr)
+        typeid = self.get_bits_segment_and_convert(itr=itr, count=3)
+        if self.literal_type(typeid=typeid):
+            return self.get_literal_value(itr)
         else:
+            
             bitlen, pktnum = self.get_sub_pack_info(itr=itr, length_type=next(itr))
+            opObj = Operator(typeid, pktnum=pktnum, bitlen=bitlen)
             self.bits_consumed += 1
             if pktnum:
                 print(f"Number of sub pkts is {pktnum}")
                 for p in range(pktnum):
-                    self.read_packet(itr)
+                    opObj.collect_sub_vals(self.read_packet(itr))
             else: # we got the bits length of sub packets
                 start_at = self.bits_consumed
                 while self.bits_consumed < start_at + bitlen: 
-                    self.read_packet(itr)
+                    opObj.collect_sub_vals(self.read_packet(itr))
+            
+            return opObj.execute()
 
     def interpret(self):
         p2bstrings_g = map(lambda x: self.HEX2BIN[x], self.hpacket)
         bin_generator = self.bin_generator(p2bstrings_g)
-        self.read_packet(bin_generator)
+        return self.read_packet(bin_generator)
         
     def solve_part1(self):
         self.digest_input()
@@ -121,4 +189,4 @@ class DailyClass:
 
     def solve_part2(self):
         self.digest_input()
-        return "Not Impl"
+        return self.interpret()
