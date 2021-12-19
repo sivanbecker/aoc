@@ -1,5 +1,5 @@
 from typing import Tuple
-from uuid import uuid1
+from uuid import uuid4
 
 class Operator:
 
@@ -17,7 +17,7 @@ class Operator:
             6: '_less_than',
             7: '_equal_to' 
         }
-        self.id = uuid1()
+        self.id = uuid4()
         self._op = self.OP[typeid]
         self._typeid = typeid
         assert bitlen or pktnum, f"Please provide pktnum or bitlen when creating new Operator Object"
@@ -41,7 +41,7 @@ class Operator:
         return 1 if self.sub_vals[0] < self.sub_vals[1] else 0
 
     def _greater_than(self):
-        return 1 if self._less_than() == 0 else 0    
+        return 1 if self.sub_vals[0] > self.sub_vals[1] else 0    
 
     def _equal_to(self):
         return 1 if self.sub_vals[0] == self.sub_vals[1] else 0
@@ -80,18 +80,14 @@ class DailyClass:
         self.bits_consumed = 0
 
     def veradd(self, v):
-        print(f"Adding version {v}")
+        # print(f"Adding version {v}")
         self.versions_sum += v
 
     def literal_type(self, typeid):
         ''' return True if literal pkt'''
         if typeid == 4:
-            print("<< Literal PKT >> ", end='')
+            # print("<< Literal PKT >> ", end='')
             return True
-
-
-    def optype(self, typeid):
-        ''' for different operator types '''
 
     def digest_input(self):
         self.hpacket = next(self._fh_iter)
@@ -135,11 +131,11 @@ class DailyClass:
         while more_to_go:
             more_to_go, chunk = read_chunk(itr)
             chunks.append(chunk)
-        print(f"Val = {int(''.join(chunks), 2)}")
+        # print(f"Val = {int(''.join(chunks), 2)}")
         return int(''.join(chunks), 2)
 
     def get_sub_pack_info(self, itr, length_type:str=None):
-        print(f"I bit is {length_type}")
+        # print(f"I bit is {length_type}")
         if length_type == '0':
             return self.get_bits_segment_and_convert(itr, count=15), None
         elif length_type == '1':
@@ -152,7 +148,6 @@ class DailyClass:
         if self.literal_type(typeid=typeid):
             return self.get_literal_value(itr)
         else:
-            
             bitlen, pktnum = self.get_sub_pack_info(itr=itr, length_type=next(itr))
             opObj = Operator(typeid, pktnum=pktnum, bitlen=bitlen)
             self.bits_consumed += 1
