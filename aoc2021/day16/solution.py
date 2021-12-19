@@ -1,5 +1,5 @@
 from typing import Tuple
-
+from uuid import uuid1
 
 class Operator:
 
@@ -17,17 +17,17 @@ class Operator:
             6: '_less_than',
             7: '_equal_to' 
         }
-        
+        self.id = uuid1()
         self._op = self.OP[typeid]
         self._typeid = typeid
         assert bitlen or pktnum, f"Please provide pktnum or bitlen when creating new Operator Object"
-        self.pktnum = pktnum # sub pkts amount (if applicable)
-        self.bitlen = bitlen # sub pkts bit len (if applicable)
+        self.pktnum = pktnum
+        self.bitlen = bitlen
         self.sub_vals = []
         print(f"Initiated {self}")
 
     def __repr__(self):
-        return f'<Operator {self._op} (PKTNUM:{self.pktnum}; BITLEN:{self.bitlen})>'
+        return f'<Operator {self.id} {self._op} (PKTNUM:{self.pktnum}; BITLEN:{self.bitlen})>'
 
     def collect_sub_vals(self, val):
         print(f"{self} adding literal value {val}")
@@ -47,17 +47,9 @@ class Operator:
         return 1 if self.sub_vals[0] == self.sub_vals[1] else 0
 
     def execute(self):
-        if self._op in ('_product', '_greater_than', '_less_than', '_equal_to'):
-            return self.__getattribute__(self._op)()
-            # return self._product(vals=self.sub_vals)
-        return self._op(self.sub_vals)
-        # if self._op == 'sum':
-        #     return sum(self.sub_vals)
-        # if self._op == 'product':
-            
-            
-        # if self._op == 'min':
-        #     return min(self.sub_vals)
+        match self._op in ('_product', '_greater_than', '_less_than', '_equal_to'):
+            case True: return self.__getattribute__(self._op)()
+            case False: return self._op(self.sub_vals)
 class DailyClass:
 
     HEX2BIN = { 
@@ -96,8 +88,6 @@ class DailyClass:
         if typeid == 4:
             print("<< Literal PKT >> ", end='')
             return True
-        else:
-            print("** Operator **\n")
 
 
     def optype(self, typeid):
