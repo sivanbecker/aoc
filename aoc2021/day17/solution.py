@@ -78,4 +78,10 @@ class DailyClass:
 
     def solve_part2(self):
         self.digest_input()
-        return "Not Impl"
+        highs = defaultdict(list)
+        good_vel_counter = 0
+        for xvel in range(0, self.xtarget[1]+1):
+            for yvel in range(self.ytarget[0], 1000):
+                if self.shoot(xvel,yvel):
+                    good_vel_counter += 1
+        return good_vel_counter
